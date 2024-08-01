@@ -11,7 +11,7 @@ import LinkPage from './components/LinkPage';
 import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
 import PersistLogin from './components/PersistLogin';
-import Register from './Register';
+import Register from './components/Register';
 const ROLES = { 
   'User': 2001,
   'Editor': 1984,
