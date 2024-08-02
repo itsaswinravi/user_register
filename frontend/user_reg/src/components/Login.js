@@ -1,14 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
-import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import useLocalStorage from '../hooks/useLocalStorage';
-import useInput from '../hooks/useInput';
 import axios from '../api/axios';
 import useToggle from '../hooks/useToggle';
+import useAuth from '../hooks/useAuth';
 const LOGIN_URL = '/auth';
 
 const Login = () => {
-    const { setAuth} = useAuth();
+    const { setAuth } = useAuth(); // Ensure useAuth is correctly imported and used
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -17,17 +15,18 @@ const Login = () => {
     const userRef = useRef();
     const errRef = useRef();
 
-    const [user, resetUser, userAttribs] = useInput('user','');////useState('');
+    const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
-const [check, toggleCheck] = useToggle('persist', false);
+    const [check, toggleCheck] = useToggle('persist', false);
+
     useEffect(() => {
         userRef.current.focus();
-    }, [])
+    }, []);
 
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd])
+    }, [user, pwd]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,11 +40,9 @@ const [check, toggleCheck] = useToggle('persist', false);
                 }
             );
             console.log(JSON.stringify(response?.data));
-            //console.log(JSON.stringify(response));
             const accessToken = response?.data?.accessToken;
             setAuth({ user, accessToken });
-            // setUser('');
-            resetUser();
+            setUser('');
             setPwd('');
             navigate(from, { replace: true });
         } catch (err) {
@@ -60,59 +57,60 @@ const [check, toggleCheck] = useToggle('persist', false);
             }
             errRef.current.focus();
         }
-    }
-    // const togglePersist = () => {
-    //     setPersist(prev => !prev);
-    // }
+    };
 
-    // useEffect(() => {
-    //     localStorage.setItem("persist", persist);
-    // }, [persist])
     return (
-
-        <section>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <h1>Sign In</h1>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Username:</label>
+        <section style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
+            <p ref={errRef} style={{ color: 'red', visibility: errMsg ? 'visible' : 'hidden' }} aria-live="assertive">
+                {errMsg}
+            </p>
+            <h1 style={{ fontSize: '2em', marginBottom: '20px' }}>Sign In</h1>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+                <label htmlFor="username" style={{ marginBottom: '10px' }}>Username:</label>
                 <input
                     type="text"
                     id="username"
                     ref={userRef}
                     autoComplete="off"
-                   {...userAttribs}
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
                     required
+                    style={{ padding: '10px', marginBottom: '20px', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
 
-                <label htmlFor="password">Password:</label>
+                <label htmlFor="password" style={{ marginBottom: '10px' }}>Password:</label>
                 <input
                     type="password"
                     id="password"
                     onChange={(e) => setPwd(e.target.value)}
                     value={pwd}
                     required
+                    style={{ padding: '10px', marginBottom: '20px', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
-                <button>Sign In</button>
-                <div  className='persistCheck'>
+
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '16px', cursor: 'pointer' }}>
+                    Sign In
+                </button>
+
+                <div style={{ marginTop: '20px' }}>
                     <input
-                    type='checkbox'
-                    id='persist'
-                    onChange={toggleCheck}
-                    checked={check}
+                        type='checkbox'
+                        id='persist'
+                        onChange={toggleCheck}
+                        checked={check}
+                        style={{ marginRight: '10px' }}
                     />
                     <label htmlFor='persist'>Trust this device</label>
-
                 </div>
             </form>
-            <p>
+            <p style={{ marginTop: '20px' }}>
                 Need an Account?<br />
-                <span className="line">
-                    <Link to="/register">Sign Up</Link>
+                <span style={{ fontWeight: 'bold', color: '#007bff' }}>
+                    <Link to="/register" style={{ textDecoration: 'none', color: '#007bff' }}>Sign Up</Link>
                 </span>
             </p>
         </section>
+    );
+};
 
-    )
-}
-
-export default Login
+export default Login;
